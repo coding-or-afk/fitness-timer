@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Fitness Timer</string>
+    <string name="minutes">분</string>
+    <string name="seconds">초</string>
+    <string name="start">시작</string>
+    <string name="pause">일시정지</string>
+    <string name="resume">계속</string>
+    <string name="reset">초기화</string>
+</resources>
