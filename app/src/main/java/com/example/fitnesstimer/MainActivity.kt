@@ -1,7 +1,10 @@
 package com.example.fitnesstimer
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.SystemClock
@@ -20,7 +23,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var timeText: TextView
     private lateinit var statusText: TextView
-    private lateinit var progressRing: ProgressRingView
     private lateinit var minutePicker: NumberPicker
     private lateinit var secondPicker: NumberPicker
     private lateinit var pickerRow: View
@@ -31,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     private var timer: CountDownTimer? = null
     private var player: MediaPlayer? = null
     private var remainingMillis = 0L
-    private var totalMillis = 0L
     private var state = State.READY
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         timeText = findViewById(R.id.timeText)
         statusText = findViewById(R.id.statusText)
-        progressRing = findViewById(R.id.progressRing)
         minutePicker = findViewById(R.id.minutePicker)
         secondPicker = findViewById(R.id.secondPicker)
         pickerRow = findViewById(R.id.pickerRow)
@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity() {
 
         val onPick = NumberPicker.OnValueChangeListener { _, _, _ ->
             remainingMillis = pickedMillis()
-            totalMillis = remainingMillis
             showTime(remainingMillis)
             setState(State.READY)
         }
@@ -76,11 +75,11 @@ class MainActivity : AppCompatActivity() {
     private fun start() {
         if (remainingMillis <= 0) {
             remainingMillis = pickedMillis()
-            totalMillis = remainingMillis
         }
         if (remainingMillis <= 0) return
 
         stopBell()
+        requestNotificationPermission()
         setState(State.RUNNING)
 
         timer = object : CountDownTimer(remainingMillis, 100) {
@@ -93,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                 remainingMillis = 0
                 showTime(0)
                 setState(State.DONE)
+                TimerNotificationService.stop(this@MainActivity)
                 playBell()
             }
         }.start()
@@ -107,7 +107,6 @@ class MainActivity : AppCompatActivity() {
         timer?.cancel()
         stopBell()
         remainingMillis = pickedMillis()
-        totalMillis = remainingMillis
         showTime(remainingMillis)
         setState(State.READY)
     }
@@ -143,7 +142,27 @@ class MainActivity : AppCompatActivity() {
         // 올림 처리: 남은 0.3초는 00:01로 보이고, 정확히 끝날 때 00:00이 된다
         val totalSeconds = (millis + 999) / 1000
         timeText.text = "%02d:%02d".format(totalSeconds / 60, totalSeconds % 60)
-        progressRing.progress = if (totalMillis > 0) millis.toFloat() / totalMillis else 0f
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        TimerNotificationService.stop(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // 다크 모드 전환으로 다시 만들어질 때는 알림을 띄우지 않는다
+        if (state == State.RUNNING && !isChangingConfigurations) {
+            TimerNotificationService.start(this, remainingMillis)
+        }
     }
 
     private fun toggleNightMode() {
@@ -161,7 +180,6 @@ class MainActivity : AppCompatActivity() {
         outState.putInt(KEY_MINUTES, minutePicker.value)
         outState.putInt(KEY_SECONDS, secondPicker.value)
         outState.putLong(KEY_REMAINING, remainingMillis)
-        outState.putLong(KEY_TOTAL, totalMillis)
         outState.putLong(KEY_END_AT, SystemClock.elapsedRealtime() + remainingMillis)
     }
 
@@ -169,7 +187,6 @@ class MainActivity : AppCompatActivity() {
         minutePicker.value = saved.getInt(KEY_MINUTES)
         secondPicker.value = saved.getInt(KEY_SECONDS)
         remainingMillis = saved.getLong(KEY_REMAINING)
-        totalMillis = saved.getLong(KEY_TOTAL)
         var savedState = State.valueOf(saved.getString(KEY_STATE) ?: State.READY.name)
 
         if (savedState == State.RUNNING) {
@@ -203,6 +220,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         timer?.cancel()
         stopBell()
+        if (!isChangingConfigurations) TimerNotificationService.stop(this)
         super.onDestroy()
     }
 
@@ -212,7 +230,6 @@ class MainActivity : AppCompatActivity() {
         const val KEY_MINUTES = "minutes"
         const val KEY_SECONDS = "seconds"
         const val KEY_REMAINING = "remaining"
-        const val KEY_TOTAL = "total"
         const val KEY_END_AT = "end_at"
     }
 }

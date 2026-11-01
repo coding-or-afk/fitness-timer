@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.fitnesstimer"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.fitnesstimer"
@@ -31,4 +31,5 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.core:core:1.17.0")
 }

@@ -7,7 +7,8 @@
 - 분(0–99)과 초(0–59)를 휠로 선택해 최대 99:59까지 설정
 - 시작 / 일시정지 / 계속 / 초기화
 - 타이머가 도는 동안 화면이 꺼지지 않음
-- 남은 시간을 원형 진행 링으로 표시
+- 타이머가 도는 중에 앱을 나가면 알림에 남은 시간 표시 (알림을 누르면 앱으로 복귀)
+  - Android 16 이상에서는 Live Update로 상단 상태바에 남은 시간이 바로 보임
 - 시간이 끝나면 복싱 벨 소리 재생
 - 오른쪽 위 버튼으로 라이트/다크 모드 전환 (처음에는 시스템 설정을 따르고, 고른 모드는 저장됨)
 - 세로 화면 고정
@@ -22,7 +23,7 @@
 ## 요구 사항
 
 - Android 7.0 (API 24) 이상
-- 빌드: JDK 17, Android SDK 35
+- 빌드: JDK 17, Android SDK 36
 
 ## 빌드 및 설치
 
@@ -44,7 +45,8 @@ Android SDK 경로는 `ANDROID_HOME` 환경 변수나 프로젝트 루트의 `lo
 app/src/main/
 ├── AndroidManifest.xml
 ├── java/com/example/fitnesstimer/
-│   └── MainActivity.kt        # 타이머 로직 전체 (CountDownTimer + MediaPlayer)
+│   ├── MainActivity.kt                # 타이머 로직 (CountDownTimer + MediaPlayer)
+│   └── TimerNotificationService.kt    # 백그라운드에서 남은 시간 알림 (포그라운드 서비스)
 └── res/
     ├── layout/activity_main.xml
     ├── raw/boxingbell.mp3     # 종료 알림음
@@ -54,5 +56,5 @@ app/src/main/
 ## 기술 스택
 
 - Kotlin 2.0.21
-- Android Gradle Plugin 8.7.3 / Gradle 8.9
-- AndroidX AppCompat 1.7.0
+- Android Gradle Plugin 8.9.1 / Gradle 8.11.1
+- AndroidX AppCompat 1.7.0, Core 1.17.0

@@ -40,42 +40,24 @@
         android:orientation="vertical"
         android:paddingHorizontal="24dp">
 
-        <FrameLayout
-            android:layout_width="240dp"
-            android:layout_height="240dp">
+        <TextView
+            android:id="@+id/timeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="00:00"
+            android:textColor="@color/text_primary"
+            android:textSize="80sp" />
 
-            <com.example.fitnesstimer.ProgressRingView
-                android:id="@+id/progressRing"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/timeText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-light"
-                    android:text="00:00"
-                    android:textColor="@color/text_primary"
-                    android:textSize="60sp" />
-
-                <TextView
-                    android:id="@+id/statusText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.1"
-                    android:text="@string/status_ready"
-                    android:textColor="@color/accent"
-                    android:textSize="15sp" />
-            </LinearLayout>
-        </FrameLayout>
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.1"
+            android:text="@string/status_ready"
+            android:textColor="@color/accent"
+            android:textSize="15sp" />
 
         <LinearLayout
             android:id="@+id/pickerRow"

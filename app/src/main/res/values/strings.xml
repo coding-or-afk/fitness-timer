@@ -11,4 +11,6 @@
     <string name="status_paused">일시정지</string>
     <string name="status_done">끝!</string>
     <string name="toggle_theme">다크 모드로 전환</string>
+    <string name="notification_channel">타이머</string>
+    <string name="notification_text">탭하면 타이머로 돌아갑니다</string>
 </resources>
