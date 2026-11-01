@@ -6,4 +6,9 @@
     <string name="pause">일시정지</string>
     <string name="resume">계속</string>
     <string name="reset">초기화</string>
+    <string name="status_ready">준비</string>
+    <string name="status_running">운동 중</string>
+    <string name="status_paused">일시정지</string>
+    <string name="status_done">끝!</string>
+    <string name="toggle_theme">다크 모드로 전환</string>
 </resources>
